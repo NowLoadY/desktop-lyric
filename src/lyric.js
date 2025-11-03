@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Soup from 'gi://Soup';
+import GLib from 'gi://GLib';
 
 import * as T from './util.js';
 import * as F from './fubar.js';
 import {Key as K, URL} from './const.js';
+import {LLMParser, shouldUseLLM} from './llm.js';
 
 const {$} = T;
 
@@ -56,12 +58,14 @@ export default class Lyric extends F.Mortal {
 
     constructor(set) {
         super()[$].$bindSettings(set).$buildSources();
+        this.llmParser = new LLMParser(this);
     }
 
     $bindSettings(set) {
         this.$set = set.tie([
             K.PATH, K.FABK, [K.PRVD, x => Provider[x]],
             [K.ONLN, null, x => this.$src.client.toggle(x)],
+            K.LLMEP, K.LLMMD, K.LLMAK,  // LLM API configuration
         ], this);
     }
 
@@ -72,15 +76,32 @@ export default class Lyric extends F.Mortal {
     }
 
     async load(song, reload, cancel = this.$src.cancel.reborn()) {
+        // Debug: Log all load() calls
+        console.log(`[Lyric] load() called - Title: "${song.title}", isVideo: ${song.isVideo}, reload: ${reload}`);
+        F.me().getLogger().info(`[Lyric] load() called - Title: "${song.title}", isVideo: ${song.isVideo}, reload: ${reload}`);
+        
         let file = T.fopen(this.path(song));
         try {
             if(reload) throw Error('dirty');
             let [contents] = await T.fread(file, cancel);
+            console.log(`[Lyric] Loaded from cache: ${song.title}`);
             return T.decode(contents);
         } catch(e) {
             if(F.Source.cancelled(e) || !this.$src.client.active) throw e;
+            console.log(`[Lyric] Cache miss, fetching lyrics for: ${song.title}`);
             try {
-                let lyric = await this[K.PRVD].fetch(song, this.$src.client.hub, cancel, this[K.FABK]);
+                // For video sources, use LLM to parse title and artist
+                let processedSong = song;
+                if (shouldUseLLM(song)) {
+                    console.log(`[Lyric] Video source detected, triggering LLM processing`);
+                    console.log(`[Lyric] Original - Title: "${song.title}", Artist: [${song.artist.join(', ')}]`);
+                    processedSong = await this.llmParser.parseVideoTitle(song, cancel, this.$src.client.hub);
+                    console.log(`[Lyric] Processed - Title: "${processedSong.title}", Artist: [${processedSong.artist.join(', ')}]`);
+                } else {
+                    console.log(`[Lyric] Music player source (isVideo=${song.isVideo}), skipping LLM processing`);
+                }
+                
+                let lyric = await this[K.PRVD].fetch(processedSong, this.$src.client.hub, cancel, this[K.FABK]);
                 T.fwrite(file, lyric || ' ').catch(T.nop);
                 return lyric;
             } catch(e1) {

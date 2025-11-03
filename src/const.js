@@ -23,4 +23,7 @@ export const Key = {
     AVPL: 'allow-video-players',
     PMPL: 'preferred-mpris-player',
     PWID: 'panel-width',
+    LLMEP: 'llm-api-endpoint',
+    LLMMD: 'llm-model',
+    LLMAK: 'llm-api-key',
 };

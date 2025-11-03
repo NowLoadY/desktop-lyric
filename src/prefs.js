@@ -4,6 +4,7 @@
 import * as UI from './ui.js';
 import * as T from './util.js';
 import {Key as K, URL} from './const.js';
+import {getLLMSettingsGroup} from './llm-config.js';
 
 const {_} = UI;
 
@@ -27,6 +28,9 @@ class DesktopLyricPrefs extends UI.Page {
             [K.AREA, new UI.Drop([_('Left'), _('Center'), _('Right')])],
             [K.PATH, new UI.File({folder: true, size: true, open: true})],
             [K.PRVD, new UI.Drop([_('NetEase Cloud'), _('NetEase Cloud (Trans)'), _('LRCLIB')])],
+            [K.LLMEP, new UI.Entry()],
+            [K.LLMMD, new UI.Entry()],
+            [K.LLMAK, new UI.Entry()],
         ];
     }
 
@@ -54,8 +58,7 @@ class DesktopLyricPrefs extends UI.Page {
             ]], 
             
             // Lyrics Source group
-            [[[_('Lyrics Source')]], [
-                [[_('_Online'), _('Try to download and save the missing lyrics')], K.ONLN],
+            [[[_('Lyrics Source'), _('Enable online lyrics download when local lyrics are missing')], K.ONLN], [
                 [[_('_Provider'), _('Prefer <a href="%s">lyrics from Mpris metadata</a>').format('https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/#xesam:astext')],
                     new UI.Help(({h}) => [h(_('URL')), [
                         [_('NetEase Cloud'), `<a href="${URL.NCM}">${URL.NCM}</a>`],
@@ -63,7 +66,10 @@ class DesktopLyricPrefs extends UI.Page {
                     ]]), K.PRVD],
                 [[_('F_allback'), _('Use the first result when searches cannot be matched precisely')], K.FABK],
                 [[_('_Location'), _('Filename format: <i>Title-Artist1,Artist2-Album.lrc</i>')], K.PATH],
-            ]]
+            ]], 
+            
+            // LLM API group (from llm-config module)
+            getLLMSettingsGroup()
         );
     }
 }
