@@ -39,26 +39,27 @@ class DesktopLyricPrefs extends UI.Page {
             // Appearance group
             [[[_('Appearance')]], [
                 [[_('_Font')], K.FONT],
-                [[_('_Opacity'), _('Transparency of desktop lyric')], K.OPCT],
-                [[_('Or_ientation'), _('Display direction of lyrics')], K.ORNT],
+                [[_('_Opacity')], K.OPCT],
+                [[_('Or_ientation')], K.ORNT],
             ]], 
             
             // Behavior group
             [[[_('Behavior')]], [
-                [[_('_Mobilize'), _('Allow dragging to displace desktop lyric position')], K.DRAG],
-                [[_('_Show progress'), _('Display playback progress on lyrics')], K.PRGR],
+                [[_('_Mobilize'), _('Allow dragging to displace')], K.DRAG],
+                [[_('_Show progress')], K.PRGR],
                 [[_('_Refresh interval'), _('Lower values = smoother but higher CPU usage')], K.SPAN],
             ]], 
             
             // Player group
             [[[_('Player')]], [
-                [[_('S_ystray position'), _('Position of the system tray icon')], K.AREA],
+                [[_('S_ystray position')], K.AREA],
                 [[_('Panel _width'), _('Fixed width of panel lyric in pixels (minimized mode only)')], K.PWID],
                 [[_('Allow _video players'), _('Allow Chromium/Electron-based players to be recognized')], K.AVPL],
             ]], 
             
             // Lyrics Source group
-            [[[_('Lyrics Source'), _('Enable online lyrics download when local lyrics are missing')], K.ONLN], [
+            [[[_('Lyrics Source')]], [
+                [[_('_Online'), _('Try to download and save the missing lyrics')], K.ONLN],
                 [[_('_Provider'), _('Prefer <a href="%s">lyrics from Mpris metadata</a>').format('https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/#xesam:astext')],
                     new UI.Help(({h}) => [h(_('URL')), [
                         [_('NetEase Cloud'), `<a href="${URL.NCM}">${URL.NCM}</a>`],

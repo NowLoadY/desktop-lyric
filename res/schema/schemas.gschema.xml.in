@@ -70,5 +70,17 @@
         <default>300</default>
         <summary>panel lyric fixed width (pixels)</summary>
     </key>
+    <key type="s" name="llm-api-endpoint">
+        <default>"http://localhost:11434/v1/chat/completions"</default>
+        <summary>LLM API endpoint for video title parsing</summary>
+    </key>
+    <key type="s" name="llm-model">
+        <default>"gemma3:1b"</default>
+        <summary>LLM model name</summary>
+    </key>
+    <key type="s" name="llm-api-key">
+        <default>"ollama"</default>
+        <summary>LLM API key (use "ollama" for local Ollama)</summary>
+    </key>
   </schema>
 </schemalist>

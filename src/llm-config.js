@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: tuberry
+// SPDX-FileCopyrightText: NowLoadY
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import * as UI from './ui.js';
@@ -15,7 +15,7 @@ export function getLLMSettingsGroup() {
         [[_('LLM API'), _('AI-powered video title parsing for better lyric matching')]], 
         [
             [[_('API _Endpoint'), _('OpenAI-compatible API endpoint (e.g., Ollama, OpenAI, etc.)')], K.LLMEP],
-            [[_('_Model'), _('LLM model name (e.g., qwen2.5:3b, gpt-4, gpt-3.5-turbo)')], K.LLMMD],
+            [[_('_Model'), _('LLM model name (e.g., gemma3:1b)')], K.LLMMD],
             [[_('API _Key'), _('API key for authentication (use "ollama" for local Ollama)')], K.LLMAK],
         ]
     ];

@@ -22,7 +22,10 @@ git clone https://github.com/tuberry/desktop-lyric.git && cd desktop-lyric
 meson setup build && meson install -C build
 # meson setup build -Dtarget=system && meson install -C build # system-wide, default --prefix=/usr/local
 ```
-
+or
+```bash
+bash cli/install.sh
+```
 For older versions, it's recommended to install via:
 
 ```bash
@@ -35,6 +38,14 @@ It's quite the same as installing from:
 ### E.G.O
 
 [<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" align="middle">][EGO]
+## LLM for searching lyrics
+While using webbrowser or video player, it can parse the title and artist from the video page and search lyrics for you. (Only when you manually select the media source you want to use)
+### Configuration
+install ollama then  
+pull model:(it's recommended to use gemma3:1b)
+```bash
+bash ollama pull gemma3:1b
+```
 
 ## Notes
 

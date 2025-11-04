@@ -79,7 +79,7 @@ export default class Lyric extends F.Mortal {
         // Debug: Log all load() calls
         console.log(`[Lyric] load() called - Title: "${song.title}", isVideo: ${song.isVideo}, reload: ${reload}`);
         F.me().getLogger().info(`[Lyric] load() called - Title: "${song.title}", isVideo: ${song.isVideo}, reload: ${reload}`);
-        
+
         let file = T.fopen(this.path(song));
         try {
             if(reload) throw Error('dirty');
@@ -89,6 +89,7 @@ export default class Lyric extends F.Mortal {
         } catch(e) {
             if(F.Source.cancelled(e) || !this.$src.client.active) throw e;
             console.log(`[Lyric] Cache miss, fetching lyrics for: ${song.title}`);
+
             try {
                 // For video sources, use LLM to parse title and artist
                 let processedSong = song;
@@ -100,8 +101,9 @@ export default class Lyric extends F.Mortal {
                 } else {
                     console.log(`[Lyric] Music player source (isVideo=${song.isVideo}), skipping LLM processing`);
                 }
-                
-                let lyric = await this[K.PRVD].fetch(processedSong, this.$src.client.hub, cancel, this[K.FABK]);
+                console.log(`[Lyric] Fetching lyrics with - Title: "${processedSong.title}", Artist: [${processedSong.artist.join(', ')}]`);
+                let lyric = await this.fetchLyricWithFallback(processedSong, cancel);
+                console.log(`[Lyric] Fetch result - Length: ${lyric ? lyric.length : 0} chars, Has content: ${!!lyric}`);
                 T.fwrite(file, lyric || ' ').catch(T.nop);
                 return lyric;
             } catch(e1) {
@@ -121,5 +123,51 @@ export default class Lyric extends F.Mortal {
 
     path(song) {
         return this[K.PATH] && `${this[K.PATH]}/${Lyric.name(song, '-', ',', true).replaceAll('/', '／')}.lrc`;
+    }
+
+    async fetchLyricWithFallback(song, cancel) {
+        let primaryProvider = this[K.PRVD];
+        const fallbackEnabled = this[K.FABK];
+        if (typeof primaryProvider === 'function') {
+            primaryProvider = Provider.indexOf(primaryProvider);
+        }
+        if (!Number.isInteger(primaryProvider) || primaryProvider < 0 || primaryProvider >= Provider.length) {
+            console.warn(`[Lyric] Invalid primary provider (${primaryProvider}), using default (0 - Netease)`);
+            primaryProvider = 0;
+        }
+
+        try {
+            console.log(`[Lyric] Trying primary provider (index ${primaryProvider})`);
+            const lyric = await Provider[primaryProvider].fetch(song, this.$src.client.hub, cancel, fallbackEnabled);
+            if (lyric) {
+                return lyric;
+            }
+            // Empty result, try fallback if enabled
+            console.log(`[Lyric] Primary provider returned empty result`);
+        } catch (e) {
+            console.log(`[Lyric] Primary provider failed: ${e.message}`);
+        }
+
+        // Try fallback providers if enabled
+        if (fallbackEnabled) {
+            console.log(`[Lyric] Fallback enabled, trying other providers...`);
+            for (let i = 0; i < Provider.length; i++) {
+                if (i === primaryProvider) continue;
+                try {
+                    console.log(`[Lyric] Trying fallback provider (index ${i})`);
+                    const lyric = await Provider[i].fetch(song, this.$src.client.hub, cancel, fallbackEnabled);
+                    if (lyric) {
+                        console.log(`[Lyric] ✓ Fallback provider ${i} succeeded`);
+                        return lyric;
+                    }
+                } catch (e2) {
+                    console.log(`[Lyric] Fallback provider ${i} failed: ${e2.message}`);
+                }
+            }
+            console.log(`[Lyric] All fallback providers failed`);
+        }
+
+        // Return empty if all attempts failed
+        return null;
     }
 }

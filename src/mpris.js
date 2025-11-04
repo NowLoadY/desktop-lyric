@@ -331,6 +331,7 @@ export default class Mpris extends F.Mortal {
             album, 
             lyric, 
             title,
+            isVideo: this.isCurrentPlayerVideo(),
         });
     }
 
@@ -842,8 +843,10 @@ export class PlayerMenu {
             items[i].destroy();
         }
         
-        // Set ornament for Auto item (index 0)
-        items[0].setOrnament(!preferred ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NO_DOT);
+        // Set ornament for Auto item using saved reference
+        if (this.autoItem) {
+            this.autoItem.setOrnament(!preferred ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NO_DOT);
+        }
         
         // Verify and refresh all player titles, filter out dead players
         const verificationResults = await Promise.all(

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: tuberry
+// SPDX-FileCopyrightText: NowLoadY
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Soup from 'gi://Soup';
@@ -35,16 +35,29 @@ Video Title: ${song.title}
 MPRIS Artist (may be uploader): ${song.artist.join(', ') || 'unknown'}
 
 Rules:
-- Remove tags like 【game】, (Official Video), (cover), (CV: xxx), etc.
+- Remove tags like 【game】, (Official Video), (cover), (CV: xxx), channel names, etc.
 - Extract the actual song title and artist name
+- For covers, the artist is the cover singer, not the original artist
 - If artist is unclear, return empty array
 
 Required JSON format (ONLY return this, nothing else):
 {"title": "song name", "artist": ["artist name"]}
 
 Examples:
-{"title": "モエチャッカファイア", "artist": ["エレン・ジョー"]}
-{"title": "Look at the Sky", "artist": ["Porter Robinson"]}
+Input: "【ゼンゼロ】モエチャッカファイア / エレン・ジョー（CV：若山詩音）cover"
+Output: {"title": "モエチャッカファイア", "artist": ["エレン・ジョー"]}
+
+Input: "キャットラビング/沙花叉クロヱ(cover)"
+Output: {"title": "キャットラビング", "artist": ["沙花叉クロヱ"]}
+
+Input: "Look at the Sky - Porter Robinson (Official Video)"
+Output: {"title": "Look at the Sky", "artist": ["Porter Robinson"]}
+
+Input: "「Vivy- Fluorite Eye's Song」 ed /八木海莉- Fluorite Eye's Song (日中歌詞)"
+Output: {"title": "Fluorite Eye's Song", "artist": ["八木海莉"]}
+
+Input: "DECO*27 - Rabbit Hole feat. Hatsune Miku"
+Output: {"title": "Rabbit Hole", "artist": ["DECO*27"]}
 
 Now parse and return JSON only:`;
 
