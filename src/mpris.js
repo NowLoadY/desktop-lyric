@@ -425,8 +425,9 @@ export function getPlaybackPriority(status) {
 /**
  * PlayerScanner - Responsible for scanning and discovering MPRIS players
  */
-export class PlayerScanner {
+export class PlayerScanner extends F.Mortal {
     constructor(settings) {
+        super();
         this.settings = settings;
         this.playerProxies = new Map();
     }
@@ -480,15 +481,15 @@ export class PlayerScanner {
             
             playbackStatus = proxy.PlaybackStatus || 'Stopped';
             
-            // Monitor playback status changes
-            const signalId = proxy.connect('g-properties-changed', (proxy, changed) => {
+            // Monitor playback status changes - use F.connect for automatic cleanup
+            F.connect(this, proxy, 'g-properties-changed', (proxy, changed) => {
                 if (changed.lookup_value('PlaybackStatus', null)) {
                     onStatusChanged(name, proxy.PlaybackStatus);
                 }
             });
             
-            // Store proxy for cleanup later
-            this.playerProxies.set(name, {proxy, signalId});
+            // Store proxy for reference
+            this.playerProxies.set(name, {proxy});
         } catch (e) {
             // Failed to get status, default to Stopped
         }
@@ -578,11 +579,7 @@ export class PlayerScanner {
      * Clean up all player proxies
      */
     cleanup() {
-        for (const [name, {proxy, signalId}] of this.playerProxies.entries()) {
-            if (signalId) {
-                proxy.disconnect(signalId);
-            }
-        }
+        // F.connect will auto-cleanup when this object is destroyed
         this.playerProxies.clear();
     }
 
@@ -591,13 +588,8 @@ export class PlayerScanner {
      * @param {string} name - Player D-Bus name
      */
     cleanupPlayer(name) {
-        const proxyInfo = this.playerProxies.get(name);
-        if (proxyInfo) {
-            if (proxyInfo.signalId) {
-                proxyInfo.proxy.disconnect(proxyInfo.signalId);
-            }
-            this.playerProxies.delete(name);
-        }
+        // F.connect will auto-cleanup when object is destroyed
+        this.playerProxies.delete(name);
     }
 }
 
