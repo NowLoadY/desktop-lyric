@@ -1,0 +1,1 @@
+journalctl --user --since "2 minutes ago" | grep -E "\[LLM\]|\[Lyric\]"
