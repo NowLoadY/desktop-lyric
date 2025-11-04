@@ -1,15 +1,13 @@
 <!--
 SPDX-FileCopyrightText: tuberry
+SPDX-FileCopyrightText: NowloadY
 SPDX-License-Identifier: CC-BY-SA-4.0
 -->
-# desktop-lyric
+# [desktop-lyric](https://github.com/tuberry/desktop-lyric)
 
 GNOME Shell extension to show the singing lyric on the desktop.
 
->很多歌消失了。 —— *汪曾祺 《徙》*\
-[![license]](/LICENSE.md)
-
-![bee](https://user-images.githubusercontent.com/17917040/107332354-08111f80-6aef-11eb-9c7a-f8799c834501.png)
+**LLM-Enhance Version**
 
 ## Installation
 
@@ -35,27 +33,6 @@ gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
 
 It's quite the same as installing from:
 
-### E.G.O
-
-[<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" align="middle">][EGO]
-## LLM for searching lyrics
-While using webbrowser or video player, it can parse the title and artist from the video page and search lyrics for you. (Only when you manually select the media source you want to use)
-### Configuration
-install ollama then  
-pull model:(it's recommended to use gemma3:1b)
-```bash
-bash ollama pull gemma3:1b
-```
-
-## Notes
-
-* High CPU usage;
-* Draw at an even pace so that exact synchronization with the song is not guaranteed;
-
-## Contributions
-
-Feel free to open an issue or PR in the repo for any question or idea.
-
 ### Translations
 
 To initialize or update the po file from sources:
@@ -64,16 +41,8 @@ To initialize or update the po file from sources:
 bash ./cli/update-po.sh [your_lang_code] # like zh_CN, default to $LANG
 ```
 
-### Developments
-
-To install GJS TypeScript type [definitions](https://www.npmjs.com/package/@girs/gnome-shell):
-
-```bash
-npm install @girs/gnome-shell --save-dev
-```
-
 ## Acknowledgements
-
+* [desktop-lyric](https://github.com/tuberry/desktop-lyric): basement
 * [lyrics-finder]: online lyrics
 * [osdlyrics]: some names
 
