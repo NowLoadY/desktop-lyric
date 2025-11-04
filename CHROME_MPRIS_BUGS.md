@@ -9,7 +9,7 @@
 
 ## 根本原因
 
-### 1. Chrome MPRIS 的 `mpris:length` bug
+### Chrome MPRIS 的 `mpris:length` bug
 
 Chrome 的 MPRIS 实现存在严重缺陷，metadata 更新不是原子化的：
 
@@ -41,34 +41,6 @@ Chrome 的 MPRIS 实现存在严重缺陷，metadata 更新不是原子化的：
 - 当前播放位置 60 秒：60/122 ≈ 49%，显示歌词的 49% 位置
 - 应该是：60/225 ≈ 27%，显示歌词的 27% 位置
 - 导致歌词跳到了后面
-
-### 2. Position 缓存导致 sync timer 失效
-
-Sync timer 使用 `this.$pos` 缓存上次位置来判断是否需要同步：
-
-```javascript
-sync = F.Source.newDefer(
-    x => x.length && this.setPosition(this.$pos = x.at(0)),
-    async n => (x => this.$pos !== x && [x])(await mpris.getPosition()) || (n > 5 && []),
-    500
-);
-```
-
-**问题场景：**
-1. 在视频 A 点击进度条到 60 秒 → `this.$pos = 60000ms`
-2. 切换到视频 B，恰好也在 60 秒附近
-3. Sync timer 检查：`this.$pos (60000) !== currentPos (59800)` → 认为"没变化"
-4. 不触发同步
-
-### 3. LLM 异步加载的时间延迟
-
-对于 YouTube 视频：
-1. 切换视频，视频开始播放（0 秒）
-2. LLM 开始处理标题（需要 2-5 秒）
-3. 期间视频继续播放（已到 2-5 秒）
-4. 歌词获取完成，`setLyric` 被调用
-5. `getPosition()` 返回当前位置（比如 3 秒）
-6. 但如果 length 是错误的（bug #1），歌词分布就错了
 
 ## 测试环境
 
