@@ -151,8 +151,11 @@ export default class Lyric extends F.Mortal {
         // Try fallback providers if enabled
         if (fallbackEnabled) {
             console.log(`[Lyric] Fallback enabled, trying other providers...`);
+            // Skip providers from same source (Netease 0 and NeteaseTrans 1 are same source)
+            const skipIndexes = (primaryProvider === 0 || primaryProvider === 1) ? [0, 1] : [primaryProvider];
+            
             for (let i = 0; i < Provider.length; i++) {
-                if (i === primaryProvider) continue;
+                if (skipIndexes.includes(i)) continue;
                 try {
                     console.log(`[Lyric] Trying fallback provider (index ${i})`);
                     const lyric = await Provider[i].fetch(song, this.$src.client.hub, cancel, fallbackEnabled);
