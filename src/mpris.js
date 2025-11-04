@@ -805,8 +805,8 @@ export class PlayerMenu {
      * @param {PopupMenu.PopupSubMenuMenuItem} item - The menu item
      */
     onMenuOpened(item) {
-        // Update player menu items
-        this.updatePlayerMenuItems(item);
+        // Update player menu items - use promise to avoid blocking
+        this.updatePlayerMenuItems(item).catch(console.error);
     }
 
     /**
@@ -837,10 +837,8 @@ export class PlayerMenu {
             items[i].destroy();
         }
         
-        // Set ornament for Auto item using saved reference
-        if (this.autoItem) {
-            this.autoItem.setOrnament(!preferred ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NO_DOT);
-        }
+        // Set ornament for Auto item
+        this.autoItem?.setOrnament(!preferred ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NO_DOT);
         
         // Verify and refresh all player titles, filter out dead players
         const verificationResults = await Promise.all(
