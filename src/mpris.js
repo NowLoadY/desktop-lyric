@@ -40,9 +40,11 @@ export default class Mpris extends F.Mortal {
         let dbus = new F.DBusProxy('org.freedesktop.DBus', '/org/freedesktop/DBus', 
             x => x && this.$src.rescanTimer.revive(() => this.rescanAndSelectPlayer()), 
             null,
-            [['NameOwnerChanged', (_p, _s, [name, old, neo]) => { 
-                if (neo && !old) this.onNewPlayer(name);
-                else if (old && !neo) this.onPlayerDisappeared(name);
+            [['NameOwnerChanged', (_p, _s, [name, oldOwner, newOwner]) => { 
+                // Handle both disappearance and appearance independently
+                // Reference: https://github.com/GNOME/gnome-shell/blob/9d904a804e73c97a1ecde406f395cd77a53f10e7/js/ui/mpris.js#L238
+                if (oldOwner) this.onPlayerDisappeared(name);
+                if (newOwner) this.onNewPlayer(name);
             }]]),
             mpris = new F.Source(x => new F.DBusProxy(x, '/org/mpris/MediaPlayer2', 
                 y => y && this.$src.player.revive(y.gName),
