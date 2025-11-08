@@ -9,27 +9,22 @@ GNOME Shell extension to show the singing lyric on the desktop.
 
 **LLM-Enhance Version**
 
+Gnome version:49
+
 ## Installation
 
 ### Manual
 
-The latest and supported version should only work on the [current stable version](https://release.gnome.org/calendar/#branches) of GNOME Shell.
-
 ```bash
 git clone https://github.com/tuberry/desktop-lyric.git && cd desktop-lyric
-meson setup build && meson install -C build
-# meson setup build -Dtarget=system && meson install -C build # system-wide, default --prefix=/usr/local
-```
-or
-```bash
 bash cli/install.sh
 ```
-For older versions, it's recommended to install via:
 
 ```bash
-gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
-          --method org.gnome.Shell.Extensions.InstallRemoteExtension 'desktop-lyric@tuberry'
+# pull ollama model
+ollama pull gemma3:1b
 ```
+Or use any model supported by Ollama. You can also switch to an online model (e.g., GPT, Claude) in preferences (UNtested).
 
 ### Translations
 
